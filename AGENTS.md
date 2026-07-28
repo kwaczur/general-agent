@@ -29,7 +29,7 @@ Notion **nie** zastępuje live weryfikacji stanu technicznego w GitHubie.
 - Wykonuj **wyłącznie** operacje z zaakceptowanego manifestu dry runu.
 - Nie rozszerzaj scope’u. Ogólna zgoda na cel ≠ zgoda na niewymienione operacje.
 - Nie zatwierdzaj własnego dry runu, PR-a ani raportu.
-- Nie zmieniaj schematu Notion, aktywnych norm, konfiguracji Custom Agenta ani dokumentacji normatywnej, chyba że dry run to jawnie obejmuje.
+- Nie zmieniaj schematu Notion, aktywnych norm, konfiguracji Custom Agenta ani dokumentacji normatywnej.
 - Nie wykonuj merge do `main` ani deploymentu bez osobnej, jawnej zgody.
 - Nie zapisuj sekretów ani danych klientów w Notion ani w repozytorium.
 - Fail-closed: przy niedostępności Notion, Zlecenia, approval albo technical truth — tylko odczyt i raport blokady.
