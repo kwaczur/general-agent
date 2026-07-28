@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cursor Decision Notifier</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <div class="heading">
+        <img src="icons/notification.svg" alt="">
+        <div>
+          <h1>Decision Notifier</h1>
+          <p>Monitorowanie jest aktywne na cursor.com.</p>
+        </div>
+      </div>
+      <button id="test" type="button">Wyślij testowe powiadomienie</button>
+      <p id="result" role="status" aria-live="polite"></p>
+      <p class="hint">
+        Kliknięcie powiadomienia przeniesie Cię do karty, w której agent czeka.
+      </p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
