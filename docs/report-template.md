@@ -2,6 +2,7 @@
 
 Wypełnij jako **nowy rekord w bazie Raporty wykonania** w Notion po zakończeniu (lub przerwaniu) wykonania.
 Relacje rekordu: **Zlecenie builderskie**, **Dry-run** (wykonana wersja), **Pull Request** (zsynchronizowana baza GitHub).
+Wykonawcą jest zawsze **Cursor** — nie ma osobnego pola wykonawcy.
 
 ## Metadane
 
@@ -10,9 +11,9 @@ Relacje rekordu: **Zlecenie builderskie**, **Dry-run** (wykonana wersja), **Pull
 | Identyfikator runu | |
 | Identyfikator Zlecenia | |
 | Dry-run (wykonany rekord) | |
+| Wybrana Opcja (jeśli dry-run miał Opcje) | |
 | Handbook (commit SHA na `main`) | |
 | Data / czas raportu | |
-| Wykonawca | Cursor / Codex / … |
 
 ## Źródła wykorzystane
 
@@ -29,12 +30,13 @@ Relacje rekordu: **Zlecenie builderskie**, **Dry-run** (wykonana wersja), **Pull
 - HEAD startowy:
 - Working tree:
 
-## Co weszło / co wyszło
+## Co zostało dodane / co zostało usunięte
 
 Trzon raportu: callouty od góry do dołu po strukturze kodu, na podstawie rzeczywistego diffu PR-a — własnymi słowami, nie kopią Description PR-a.
 
-- ✅ Weszło:
-- ❌ Nie weszło / wyszło:
+- ✅ Dodane:
+- ❌ Usunięte:
+- ♻️ Zmienione:
 
 ## Wykonane operacje
 
@@ -102,7 +104,7 @@ Uwaga: pola `Zmergowano` **nie wypełnia się** — to rollup ze zsynchronizowan
 
 ## Potwierdzenia
 
-- [ ] Brak zmian poza zakresem dry-runu `Realizuj`
+- [ ] Brak zmian poza zakresem dry-runu `Realizuj` (i wybranej Opcji)
 - [ ] Brak merge do `main` na etapie raportu
 - [ ] Brak deploymentu
 - [ ] Brak mutacji konfiguracji Notion / Custom Agenta / norm (jeśli poza zakresem)

@@ -1,10 +1,10 @@
 # General Agent
 
-Minimalny handbook techniczny dla wykonawców (Cursor / Codex) w repozytorium `kwaczur/general-agent`.
+Minimalny handbook techniczny dla wykonawcy (**Cursor**) w repozytorium `kwaczur/general-agent`.
 
 ## Notion ↔ GitHub
 
-- **Notion** — źródło prawdy dla scope'u, decyzji operatora i stanu procesu: Zadania, Zlecenia builderskie, Dry-runs, Raporty wykonania, Analiza raportu.
+- **Notion** — źródło prawdy dla scope'u, decyzji operatora i stanu procesu: Zadania, Zlecenia builderskie, Dry-runs, Opcje, Raporty wykonania, Analiza raportu.
 - **GitHub** — źródło prawdy dla kodu, plików, branchy, commitów, Pull Requestów, testów i stanu technicznego.
 
 Szczegóły: [AGENTS.md](./AGENTS.md).
