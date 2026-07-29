@@ -1,6 +1,7 @@
-# Szablon raportu wykonania Zlecenia builderskiego
+# Szablon Raportu wykonania Zlecenia builderskiego
 
-Wypełnij w zakładce **Raport** bieżącego Zlecenia w Notion po zakończeniu (lub przerwaniu) wykonania.
+Wypełnij jako **nowy rekord w bazie Raporty wykonania** w Notion po zakończeniu (lub przerwaniu) wykonania.
+Relacje rekordu: **Zlecenie builderskie**, **Dry-run** (wykonana wersja), **Pull Request** (zsynchronizowana baza GitHub).
 
 ## Metadane
 
@@ -8,8 +9,8 @@ Wypełnij w zakładce **Raport** bieżącego Zlecenia w Notion po zakończeniu (
 |------|---------|
 | Identyfikator runu | |
 | Identyfikator Zlecenia | |
-| Zaakceptowana wersja dry runu | |
-| Rules bundle | |
+| Dry-run (wykonany rekord) | |
+| Handbook (commit SHA na `main`) | |
 | Data / czas raportu | |
 | Wykonawca | Cursor / Codex / … |
 
@@ -19,7 +20,6 @@ Wypełnij w zakładce **Raport** bieżącego Zlecenia w Notion po zakończeniu (
 - Zadanie:
 - Projekt:
 - Repozytoria / artefakty:
-- Normy (stable IDs):
 
 ## Stan wejściowy (przy starcie wykonania)
 
@@ -29,12 +29,19 @@ Wypełnij w zakładce **Raport** bieżącego Zlecenia w Notion po zakończeniu (
 - HEAD startowy:
 - Working tree:
 
+## Co weszło / co wyszło
+
+Trzon raportu: callouty od góry do dołu po strukturze kodu, na podstawie rzeczywistego diffu PR-a — własnymi słowami, nie kopią Description PR-a.
+
+- ✅ Weszło:
+- ❌ Nie weszło / wyszło:
+
 ## Wykonane operacje
 
 1.
 2.
 
-## Różnice względem planu (dry run)
+## Różnice względem planu (dry-run)
 
 - Brak / opis odstępstw:
 
@@ -64,7 +71,9 @@ Wypełnij w zakładce **Raport** bieżącego Zlecenia w Notion po zakończeniu (
 |----------|-----------|
 | Branch | |
 | Commit(y) | |
-| Pull Request | |
+| Pull Request | (URL + relacja w Notion) |
+
+Uwaga: pola `Zmergowano` **nie wypełnia się** — to rollup ze zsynchronizowanego PR-a. Przy tworzeniu Raportu powinno być puste (merge jeszcze nie istnieje).
 
 ## Niewykonane elementy
 
@@ -93,8 +102,9 @@ Wypełnij w zakładce **Raport** bieżącego Zlecenia w Notion po zakończeniu (
 
 ## Potwierdzenia
 
-- [ ] Brak zmian poza zaakceptowanym zakresem
-- [ ] Brak merge do `main`
+- [ ] Brak zmian poza zakresem dry-runu `Realizuj`
+- [ ] Brak merge do `main` na etapie raportu
 - [ ] Brak deploymentu
 - [ ] Brak mutacji konfiguracji Notion / Custom Agenta / norm (jeśli poza zakresem)
-- [ ] ID Zlecenia obecne w PR i raporcie (oraz w branchu, jeśli możliwe)
+- [ ] ID Zlecenia obecne w PR i Raporcie (oraz w branchu, jeśli możliwe)
+- [ ] Relacja Pull Request ustawiona; `Zmergowano` puste
