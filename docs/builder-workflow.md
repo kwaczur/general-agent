@@ -1,98 +1,137 @@
 # Cykl builderski General Agent
 
-Opis technicznego przebiegu pojedynczej zmiany. Scope i decyzje pochodzą z Notion; implementacja, testy i wersjonowanie — z GitHuba.
+Techniczny przebieg jednej kontrolowanej iteracji realizacji Przyjętej Decyzji. Notion przechowuje mandat, akceptacje i lifecycle; GitHub przechowuje stan techniczny.
 
 ## Przepływ
 
 ```text
-Zadanie (Notion)
-  → Zlecenie builderskie (dokładnie jedno Zadanie)
-    → Dry-run (rekord w bazie Dry-runs, Status: Do oceny)
-        [+ Opcje 1-z-N → operator zaznacza Wybierz na dokładnie jednej]
-      → decyzja operatora:
-          Aktualizuj → nowy Dry-run (Do oceny); poprzedni = Zastąpiony
-          Realizuj  → manifest zamrożony (+ wybrana Opcja), start wykonania
-            → Branch + implementacja + testy
-              → Commit + Push + Pull Request (bez merge)
-                → Raport wykonania (osobny rekord, relacja do PR)
-                  → Analiza raportu (Do oceny; Wpływ na zadanie, Merge)
-                    → decyzja operatora:
-                        Zaakceptuj      → merge PR → Zmergowano
-                        Stwórz zlecenie → Zlecenie korygujące
-                    (osobisty merge operatora w GitHubie = Zaakceptuj)
+Treść Przyjętej Decyzji + Elementy objęte decyzją
+→ Zlecenie builderskie + Elementy objęte realizacją
+→ Dry-run: Do oceny
+  [Opcje 1-z-N → dokładnie jedna Wybierz]
+→ operator: Aktualizuj / Realizuj
+→ Branch + implementacja + testy dokładnego SHA
+→ Commit + Push + Pull Request bez merge
+→ Raport wykonania
+→ Analiza raportu + Elementy gotowe do domknięcia
+→ Efekt akceptacji
+  ├─ Merge do main
+  │  → kontrola driftu i PR → merge → techniczny dowód
+  └─ Zachowaj jako kandydata
+     → brak merge → Wersja: Kandydat
+     → osobne Zadanie adaptacji
+     → testy + rollback + zgoda operatora
+     → promocja / switch → merge, publikacja, smoke test
 ```
 
-## Opcje (warianty dry-runu)
+## 1. Walidacja wejścia
 
-- Dry-run może mieć powiązane rekordy **Opcje** — alternatywne warianty realizacji tego samego zakresu (**1-z-N**).
-- Decyzję podejmuje operator, zaznaczając checkbox **`Wybierz`** na **dokładnie jednej** Opcji. Zaznaczona Opcja to wersja, na którą operator się decyduje — staje się wiążącą częścią manifestu dry-runu.
-- Wykonawca realizuje dry-run **w wariancie wybranej Opcji**; pozostałe Opcje niczego nie autoryzują i nie są realizowane.
-- Fail-closed: jeżeli dry-run `Realizuj` ma Opcje, a `Wybierz` nie jest zaznaczone na żadnej albo jest zaznaczone na więcej niż jednej → **stop**, raportuj blokadę.
-- Opcje są częścią niemutowalnej historii: nie nadpisuje się ich treści po decyzji; zmiana wariantu = `Aktualizuj` → nowy dry-run z nowymi Opcjami.
+- Odczytaj treść Decyzji jako szczegółowy mandat.
+- Potwierdź `Lifecycle docelowy = Przyjęta` i `Dalsze postępowanie = Kandydat Zlecenia builderskiego`.
+- Potwierdź `Kontrola zakresu Decyzji = OK` i `Kontrola zakresu Zlecenia = OK`.
+- Sprawdź, że Elementy Zlecenia są podzbiorem Elementów Decyzji i należą do właściwego Zadania źródłowego.
+- Potwierdź najnowszy Dry-run `Realizuj` oraz dokładnie jedną Opcję `Wybierz`, jeśli Opcje istnieją.
+- Sprawdź manifest: cel, granice, pliki, operacje, testy, dowody i sposób wycofania.
+- Sprawdź Git: remote, HEAD, bazowy SHA `origin/main`, branch i working tree.
 
-## Kroki wykonawcy
+Każdy brak lub konflikt oznacza stop i Raport blokady.
 
-### 1. Walidacja wejścia
+## 2. Protokół Dry-runu
 
-- Odczytaj Zlecenie, Zadanie, Projekt, wskazane materiały.
-- Potwierdź, że Zlecenie ma dokładnie **jedno** powiązane Zadanie.
-- Potwierdź, że **najnowszy Dry-run** Zlecenia ma status **`Realizuj`** — to jedyna autoryzacja wykonania. Dry-runy `Zastąpiony` niczego nie autoryzują.
-- Jeżeli dry-run ma Opcje: potwierdź, że dokładnie jedna ma zaznaczone `Wybierz`, i realizuj wariant tej Opcji.
-- Sprawdź brak driftu: cel, zakres, kryteria, pliki, uprawnienia, ryzyka, testy, rollback.
-- Sprawdź Git: czyste drzewo (lub stan zgodny z planem), zgodność SHA bazowego.
+- `Do oceny` — plan czeka na operatora.
+- `Aktualizuj` — nie uruchamia wykonania; powstaje nowy Dry-run, poprzedni `Zastąpiony`.
+- `Realizuj` — zgoda wyłącznie na dokładny manifest tej iteracji.
+- Korekta techniczna lub wyjaśnienie pozostaje w tej samej Decyzji.
+- Istotna zmiana celu, kierunku, granic lub Elementów wymaga nowej Decyzji z `Geneza decyzji`.
 
-### 2. Branch
+## 3. Branch i implementacja
 
-- Pracuj na branchu wykonawczym wskazanym w dry-runie / harnessie.
-- Umieść **ID Zlecenia** w nazwie brancha, gdy to możliwe.
-- Base: zwykle `main`; SHA bazowy potwierdź przed pierwszą mutacją.
+- Utwórz branch od zweryfikowanego bazowego SHA.
+- Umieść ID Zlecenia w nazwie brancha, jeśli środowisko pozwala.
+- Wykonaj wyłącznie operacje manifestu.
+- Zmiana planu → stop; nie improwizuj i nie rozszerzaj zakresu.
 
-### 3. Implementacja
+## 4. Testy
 
-- Wykonaj wyłącznie operacje z manifestu dry-runu `Realizuj` (w wariancie wybranej Opcji).
-- Nie dodawaj plików, refaktorów ani „ulepszeń" poza zakresem.
-- Po zmianie planu → stop, raportuj blokadę; dalsza praca wymaga nowego Dry-runu i decyzji operatora `Realizuj`.
+- Uruchom testy wymienione w Dry-runie.
+- Zapisz dokładny `SHA przetestowany`.
+- Nowy commit po testach unieważnia PASS.
+- Brak testów automatycznych zapisz jawnie; nie symuluj wyniku.
 
-### 4. Testy
+## 5. Commit, push i PR
 
-- Uruchom wyłącznie testy zatwierdzone w dry-runie.
-- Jeśli repozytorium nie definiuje testów dla danej zmiany — odnotuj brak w Raporcie; nie symuluj wyniku.
+- Commit i tytuł PR zawierają ID Zlecenia w docelowym workflow.
+- Otwórz PR do `main` bez merge.
+- Nie traktuj opisu PR jako autoryzacji ani Raportu.
 
-### 5. Commit, push, PR
+## 6. Raport wykonania
 
-- Commit message zawiera odniesienie do ID Zlecenia.
-- Push na branch wykonawczy.
-- Otwórz Pull Request do `main`; **tytuł zawiera `Zlecenie #<ID>`**.
-- **Bez merge** na tym etapie — merge następuje dopiero po decyzji `Zaakceptuj` na Analizie raportu (albo po osobistym merge operatora w GitHubie).
+Utwórz nowy Raport i ustaw relacje do Zlecenia, wykonanego Dry-runu i zsynchronizowanego PR.
 
-### 6. Raport wykonania
+Raport musi:
 
-- Utwórz **nowy rekord w bazie Raporty wykonania** (szablon: [report-template.md](./report-template.md)).
-- Ustaw relacje: Zlecenie builderskie, wykonany Dry-run, **Pull Request** (zsynchronizowana baza GitHub).
-- Treść opisz własnymi słowami na podstawie rzeczywistego PR-a (opis, commity, diff, checki) — **nigdy nie kopiuj Description PR-a 1:1**.
-- Trzon treści: callouty **„co zostało dodane / co zostało usunięte"** od góry do dołu po strukturze kodu.
-- Pola `Zmergowano` nie wypełniasz — to rollup z PR-a; przy tworzeniu Raportu merge nie istnieje.
-- Dołącz dowody: branch, SHA commitów, URL PR, wynik testów / brak testów, residual, blokady.
+- porównać każdą pozycję manifestu: planowano / wykonano / odstępstwo / dowód;
+- wskazać wszystkie zmienione pliki i operacje;
+- przypisać dowody do Elementów objętych realizacją;
+- zapisać branch, head SHA, testowany SHA, URL PR i wyniki testów;
+- ujawnić niewykonane elementy, residual, ryzyka i blokery;
+- nie deklarować merge ani gotowości Elementów do domknięcia.
 
-### 7. Merge (po decyzji operatora)
+## 7. Analiza raportu
 
-- Wykonuj wyłącznie po decyzji operatora **`Zaakceptuj`** na Analizie raportu.
-- **Osobisty merge operatora bezpośrednio w GitHubie jest równoważny decyzji `Zaakceptuj`** — stan w Notion uzgadnia się wtedy post-factum (Analiza raportu → `Zaakceptuj`, adnotacja o trybie decyzji).
-- Przed merge ponownie sprawdź stan PR-a: konflikt, checki, zmiany po raporcie → stop i raport blokady.
-- Wykonaj merge PR-a; potwierdzeniem jest niepuste `Zmergowano` na Raporcie wykonania.
-- Merge częściowy nie zamyka Zadania. Deployment to osobna decyzja operatora.
+Analiza ocenia:
+
+1. Czy zakres Decyzji i Zlecenia został zrealizowany?
+2. Czy Raport i dowody odpowiadają dokładnemu SHA?
+3. Które Elementy z zakresu Zlecenia są gotowe do domknięcia?
+4. Czy rekomendacja techniczna i Efekt akceptacji są spójne?
+
+Analiza może wskazać wyłącznie podzbiór `Elementów objętych realizacją`. Jej przyjęcie nie zmienia automatycznie Elementów ani Zadania.
+
+## 8. Ścieżka `Merge do main`
+
+Przed merge ponownie sprawdź:
+
+- aktualny head SHA i zgodność z Raportem;
+- przesunięcie `main` od bazowego SHA;
+- konflikty, checki i nowe commity;
+- zgodność `Efekt akceptacji = Merge do main`.
+
+Nowy commit lub istotny drift → stop, ponowna analiza i testy. Faktem merge jest `merged_at` / `Merged At`, nie `closed`, boolean `merged` ani ręczny status Notion.
+
+## 9. Ścieżka `Zachowaj jako kandydata`
+
+Warunek przekazania:
+
+```text
+Analiza = Zaakceptuj
++ Efekt akceptacji = Zachowaj jako kandydata
++ Merge potwierdzony = false
++ SHA kandydata = SHA przetestowany
++ Raport i PR powiązane
++ Wersja docelowa powiązana
++ pakiet przekazania kompletny
+→ Kandydat przyjęty
+```
+
+Pakiet przekazania obejmuje manifest zmian Custom Agenta, triggerów i permissions, instrukcję adaptacji, ograniczenia, residual oraz wymagania rollbacku. Builders nie wykonuje adaptacji, promocji ani publikacji.
+
+## 10. Domknięcie Elementów
+
+Raport i merge są dowodami, nie automatycznym domknięciem. Po zaakceptowanej Analizie operator lub autoryzowany agent aktualizuje wyłącznie wskazane `Elementy gotowe do domknięcia`. Pozostałe pozostają otwarte.
 
 ## Zakazy
 
-- Rozszerzanie scope poza manifest dry-runu `Realizuj` i wybraną Opcję
-- Autoryzacja wyłącznie na podstawie GitHuba lub rozmowy
-- Merge do `main` bez decyzji operatora (`Zaakceptuj` na Analizie albo osobisty merge operatora w GitHubie); deployment bez osobnej jawnej zgody
-- Traktowanie Raportu lub statusu w Notion jako dowodu merge (dowód = `Zmergowano`)
-- Nadpisywanie historii: dry-runów, Opcji, Raportów wykonania, Analiz raportu (korekta = nowy rekord / nowe Zlecenie)
-- Zmiana schematu Notion, norm, Custom Agenta poza zakresem
-- Sekrety i dane klientów w Notion lub repozytorium
+- wykonanie bez pełnej bramki Decyzji i Zlecenia;
+- rozszerzanie mandatu przez Dry-run;
+- merge kandydata;
+- traktowanie `closed` lub boolean `merged` jako dowodu merge;
+- użycie testów po zmianie SHA;
+- automatyczne domykanie Elementów lub Zadania;
+- promocja runtime’u przez Buildersa;
+- mutacja historii, sekretów albo danych klientów.
 
 ## Powiązane pliki
 
-- [AGENTS.md](../AGENTS.md) — zasady techniczne
-- [report-template.md](./report-template.md) — szablon Raportu wykonania
+- [AGENTS.md](../AGENTS.md)
+- [report-template.md](./report-template.md)

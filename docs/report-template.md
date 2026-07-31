@@ -1,102 +1,119 @@
 # Szablon Raportu wykonania Zlecenia builderskiego
 
-Wypełnij jako **nowy rekord w bazie Raporty wykonania** w Notion po zakończeniu (lub przerwaniu) wykonania.
-Relacje rekordu: **Zlecenie builderskie**, **Dry-run** (wykonana wersja), **Pull Request** (zsynchronizowana baza GitHub).
-Wykonawcą jest zawsze **Cursor** — nie ma osobnego pola wykonawcy.
+Nowy rekord w bazie Raporty wykonania. Raport jest dowodem wykonania, nie Analizą, autoryzacją merge ani promocją Wersji.
 
 ## Metadane
 
 | Pole | Wartość |
-|------|---------|
+|---|---|
 | Identyfikator runu | |
 | Identyfikator Zlecenia | |
-| Dry-run (wykonany rekord) | |
-| Wybrana Opcja (jeśli dry-run miał Opcje) | |
-| Handbook (commit SHA na `main`) | |
+| Decyzja źródłowa | |
+| Dry-run | |
+| Wybrana Opcja | |
+| Efekt akceptacji | `Merge do main` / `Zachowaj jako kandydata` |
+| Wersja docelowa | |
+| Handbook — SHA na `main` | |
 | Data / czas raportu | |
 
-## Źródła wykorzystane
+## Zakres
 
-- Zlecenie:
-- Zadanie:
-- Projekt:
-- Repozytoria / artefakty:
+- Treść Decyzji — streszczenie mandatu:
+- Elementy objęte Decyzją:
+- Elementy objęte realizacją:
+- Granice i jawne wykluczenia:
 
-## Stan wejściowy (przy starcie wykonania)
+## Stan wejściowy
 
-- Repo:
-- Branch:
-- Bazowy SHA (`origin/main`):
-- HEAD startowy:
-- Working tree:
+| Pole | Wartość |
+|---|---|
+| Repozytorium | |
+| Branch | |
+| Bazowy SHA `origin/main` | |
+| HEAD startowy | |
+| Working tree | |
 
-## Co zostało dodane / co zostało usunięte
+## Porównanie manifestu z wykonaniem
 
-Trzon raportu: callouty od góry do dołu po strukturze kodu, na podstawie rzeczywistego diffu PR-a — własnymi słowami, nie kopią Description PR-a.
+Każda pozycja Dry-runu musi mieć osobny wiersz. Nie pomijaj operacji niewykonanych.
+
+| # | Artefakt / fragment | Planowano | Wykonano | Odstępstwo / uzasadnienie | Dowód |
+|---|---|---|---|---|---|
+| 1 | | | | | |
+
+## Co zostało dodane / usunięte / zmienione
 
 - ✅ Dodane:
 - ❌ Usunięte:
 - ♻️ Zmienione:
-
-## Wykonane operacje
-
-1.
-2.
-
-## Różnice względem planu (dry-run)
-
-- Brak / opis odstępstw:
 
 ## Pliki zmienione
 
 - Utworzone:
 - Zmodyfikowane:
 - Usunięte:
+- Potwierdzenie braku plików poza manifestem:
 
-## Testy
+## Dowody dla Elementów
 
-| Test | Wynik | Uwagi |
-|------|-------|-------|
-| Obecność wymaganych plików | | |
-| Spójność odnośników / kryteria treściowe | | |
-| `git status --short` / zakres diff | | |
-| Testy automatyczne repo | PASS / FAIL / **brak w repo** | |
+Raport wskazuje dowody, ale nie oznacza Elementu jako gotowego do domknięcia.
 
-## Weryfikacja kryteriów akceptacji
+| Element objęty realizacją | Oczekiwany rezultat | Dowód | Stan dowodu |
+|---|---|---|---|
+| | | | pełny / częściowy / brak |
 
-- [ ] Kryterium 1:
-- [ ] Kryterium 2:
+## Testy i tożsamość kandydata
+
+| Pole / test | Wynik | Uwagi |
+|---|---|---|
+| SHA kandydata | | |
+| SHA przetestowany | | |
+| Zgodność SHA | OK / FAIL | |
+| Obecność wymaganych plików | PASS / FAIL | |
+| Spójność odnośników i treści | PASS / FAIL | |
+| Zakres diffu | PASS / FAIL | |
+| Testy automatyczne repo | PASS / FAIL / brak w repo | |
+| Nowy commit po testach | nie / tak | `tak` unieważnia PASS |
 
 ## Linki GitHub
 
 | Artefakt | URL / SHA |
-|----------|-----------|
+|---|---|
+| Repozytorium | |
 | Branch | |
 | Commit(y) | |
-| Pull Request | (URL + relacja w Notion) |
+| Pull Request | URL + relacja w Notion |
 
-Uwaga: pola `Zmergowano` **nie wypełnia się** — to rollup ze zsynchronizowanego PR-a. Przy tworzeniu Raportu powinno być puste (merge jeszcze nie istnieje).
+## Stan merge
 
-## Niewykonane elementy
+- PR state:
+- `merged_at` / `Merged At`:
+- Merge potwierdzony: tak / nie
+- `closed` ani boolean `merged` nie są samodzielnym dowodem.
+- Dla `Zachowaj jako kandydata` merge musi pozostać niepotwierdzony.
 
--
+## Niewykonane elementy i residual
 
-## Residual / pozostałości
+- Niewykonane:
+- Residual:
+- Ryzyka:
+- Blokery:
 
--
+## Pakiet przekazania kandydata
 
-## Stan rollbacku
+Wypełnij tylko dla `Zachowaj jako kandydata`.
 
-- Odwracalność: tak / częściowo / nie
-- Punkt bez powrotu osiągnięty: nie / tak (opis)
+- Wersja docelowa:
+- Dokładny SHA:
+- Manifest zmian Custom Agenta:
+- Manifest triggerów:
+- Manifest permissions:
+- Instrukcja adaptacji / migracji:
+- Punkt odniesienia rollbacku:
+- Wymagania właściwego rollbacku runtime’u:
+- Ograniczenia i otwarte pytania:
 
-## Wykryte ryzyka
-
--
-
-## Blokery
-
--
+Pakiet nie autoryzuje adaptacji, publikacji ani promocji.
 
 ## Decyzje wymagające operatora
 
@@ -104,9 +121,14 @@ Uwaga: pola `Zmergowano` **nie wypełnia się** — to rollup ze zsynchronizowan
 
 ## Potwierdzenia
 
-- [ ] Brak zmian poza zakresem dry-runu `Realizuj` (i wybranej Opcji)
-- [ ] Brak merge do `main` na etapie raportu
-- [ ] Brak deploymentu
-- [ ] Brak mutacji konfiguracji Notion / Custom Agenta / norm (jeśli poza zakresem)
-- [ ] ID Zlecenia obecne w PR i Raporcie (oraz w branchu, jeśli możliwe)
-- [ ] Relacja Pull Request ustawiona; `Zmergowano` puste
+- [ ] Pełna bramka Decyzji i Zlecenia była spełniona przed wykonaniem.
+- [ ] Wykonano wyłącznie Dry-run `Realizuj` i wybraną Opcję.
+- [ ] Każda pozycja manifestu ma wynik i dowód.
+- [ ] Wszystkie odstępstwa zostały ujawnione.
+- [ ] SHA kandydata jest zgodny z SHA przetestowanym.
+- [ ] Relacja Pull Request została ustawiona.
+- [ ] Fakt merge odczytano wyłącznie z `merged_at` / `Merged At`.
+- [ ] Przy `Zachowaj jako kandydata` PR nie został zmergowany.
+- [ ] Raport nie domknął automatycznie Elementów ani Zadania.
+- [ ] Brak deploymentu, publikacji i mutacji Custom Agenta poza osobną autoryzacją.
+- [ ] ID Zlecenia występuje w PR i Raporcie oraz w branchu, jeśli możliwe.
